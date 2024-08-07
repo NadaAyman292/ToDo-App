@@ -1,18 +1,31 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'package:todo_app/models/task_model.dart';
+import 'package:todo_app/provider/theme_provider.dart';
 import 'package:todo_app/utiles/theme/colors.dart';
 
 class TaskItem extends StatelessWidget {
-  const TaskItem({super.key});
+  TaskModel model;
+  TaskItem({
+    Key? key,
+    required this.model,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
+    var provider = Provider.of<ThemeProvider>(context);
     return Container(
-      margin: EdgeInsets.all(12),
-      padding: EdgeInsets.all(12),
+      margin: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-          color: Colors.white, borderRadius: BorderRadius.circular(24)),
+          color: provider.mode == ThemeMode.light
+              ? Colors.white
+              : MyColors.secondryDarkColor,
+          borderRadius: BorderRadius.circular(24)),
       width: double.infinity,
       height: 100,
       child: Row(
@@ -25,17 +38,24 @@ class TaskItem extends StatelessWidget {
           SizedBox(
             width: width * 0.028,
           ),
-          const Expanded(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Task Title",
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                  model.title,
+                  style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: MyColors.primaryLightColor),
                 ),
                 Text(
-                  "Task Description",
-                  style: TextStyle(fontSize: 16),
+                  model.description,
+                  style: TextStyle(
+                      fontSize: 18,
+                      color: provider.mode == ThemeMode.light
+                          ? Colors.black
+                          : Colors.white),
                 ),
               ],
             ),

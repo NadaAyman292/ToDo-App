@@ -1,11 +1,26 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:todo_app/helper/firebase_functions.dart';
+import 'package:todo_app/models/task_model.dart';
+import 'package:todo_app/provider/theme_provider.dart';
 import 'package:todo_app/utiles/theme/colors.dart';
 
-class AddTaskBottomSheet extends StatelessWidget {
-  const AddTaskBottomSheet({super.key});
+class AddTaskBottomSheet extends StatefulWidget {
+  AddTaskBottomSheet({super.key});
 
   @override
+  State<AddTaskBottomSheet> createState() => _AddTaskBottomSheetState();
+}
+
+class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
+  var titleController = TextEditingController();
+
+  var descriptionController = TextEditingController();
+  DateTime selectedDate = DateTime.now();
+  @override
   Widget build(BuildContext context) {
+    var provider = Provider.of<ThemeProvider>(context);
     return Container(
       padding: EdgeInsets.all(18),
       child: SingleChildScrollView(
@@ -15,14 +30,24 @@ class AddTaskBottomSheet extends StatelessWidget {
           children: [
             Center(
               child: Text(
-                "Add New Task",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                "add_new_task".tr(),
+                style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: provider.mode == ThemeMode.light
+                        ? Colors.black
+                        : Colors.white),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 18,
             ),
             TextField(
+              style: TextStyle(
+                  color: provider.mode == ThemeMode.light
+                      ? Colors.black
+                      : Colors.white),
+              controller: titleController,
               decoration: InputDecoration(
                 focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(18),
@@ -30,41 +55,59 @@ class AddTaskBottomSheet extends StatelessWidget {
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(18),
                     borderSide: BorderSide(color: MyColors.primaryLightColor)),
-                labelText: "Title",
+                labelText: "title".tr(),
                 labelStyle: TextStyle(color: MyColors.primaryLightColor),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 22,
             ),
             TextField(
+              style: TextStyle(
+                  color: provider.mode == ThemeMode.light
+                      ? Colors.black
+                      : Colors.white),
+              controller: descriptionController,
               decoration: InputDecoration(
                 focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(18),
-                    borderSide: BorderSide(color: MyColors.primaryLightColor)),
+                    borderSide:
+                        const BorderSide(color: MyColors.primaryLightColor)),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(18),
                 ),
-                labelText: "Description",
+                labelText: "description".tr(),
                 labelStyle: TextStyle(color: MyColors.primaryLightColor),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 18,
             ),
             Text(
-              "Select Date",
+              "select_date".tr(),
               style: TextStyle(
-                fontSize: 20,
+                  fontSize: 20,
+                  color: provider.mode == ThemeMode.light
+                      ? Colors.black
+                      : Colors.white),
+            ),
+            GestureDetector(
+              onTap: () {
+                chooseYourDate();
+              },
+              child: Center(
+                child: Text(
+                  selectedDate.toString().substring(0, 10),
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: provider.mode == ThemeMode.light
+                          ? Colors.black
+                          : Colors.white),
+                ),
               ),
             ),
-            Center(
-              child: Text(
-                "28/8/2025",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-            ),
-            SizedBox(
+            const SizedBox(
               height: 12,
             ),
             Container(
@@ -72,9 +115,18 @@ class AddTaskBottomSheet extends StatelessWidget {
                 child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                         backgroundColor: MyColors.primaryLightColor),
-                    onPressed: () {},
+                    onPressed: () {
+                      TaskModel model = TaskModel(
+                        title: titleController.text,
+                        description: descriptionController.text,
+                        date: selectedDate.microsecondsSinceEpoch,
+                      );
+                      FireBaseFunctions.addTask(model).then((value) {
+                        Navigator.pop(context);
+                      });
+                    },
                     child: Text(
-                      "Add",
+                      "add".tr(),
                       style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
@@ -84,5 +136,20 @@ class AddTaskBottomSheet extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  chooseYourDate() async {
+    DateTime? chosenDate = await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(
+        Duration(days: 365),
+      ),
+    );
+    if (chosenDate != null) {
+      selectedDate = chosenDate;
+      setState(() {});
+    }
   }
 }

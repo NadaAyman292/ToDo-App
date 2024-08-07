@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:todo_app/provider/theme_provider.dart';
 import 'package:todo_app/tabs/settings_tap.dart';
 import 'package:todo_app/tabs/task_tab.dart';
 import 'package:todo_app/utiles/theme/colors.dart';
@@ -19,9 +21,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         extendBody: true,
-        backgroundColor: MyColors.bkGroundLightColor,
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         floatingActionButton: FloatingActionButton(
+          backgroundColor: MyColors.primaryLightColor,
           onPressed: () {
             showModalBottomSheet(
                 isScrollControlled: true,
@@ -35,10 +37,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   );
                 });
           },
-          backgroundColor: MyColors.primaryLightColor,
           shape: OutlineInputBorder(
               borderRadius: BorderRadius.circular(30),
-              borderSide: BorderSide(color: Colors.transparent)),
+              borderSide: const BorderSide(color: Colors.transparent)),
           child: const Icon(
             Icons.add,
             color: Colors.white,
@@ -46,23 +47,14 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         bottomNavigationBar: BottomAppBar(
-          color: Colors.white,
           notchMargin: 8,
-          padding: EdgeInsets.zero,
-          shape: CircularNotchedRectangle(),
           child: BottomNavigationBar(
               currentIndex: selectedIndex,
               onTap: (int index) {
                 selectedIndex = index;
                 setState(() {});
               },
-              elevation: 0,
-              backgroundColor: Colors.transparent,
-              selectedItemColor: MyColors.primaryLightColor,
-              unselectedItemColor: Colors.grey,
               iconSize: 30,
-              showSelectedLabels: false,
-              showUnselectedLabels: false,
               items: const [
                 BottomNavigationBarItem(
                     label: "",
@@ -78,12 +70,8 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         appBar: AppBar(
           backgroundColor: MyColors.primaryLightColor,
-          title: const Text(
+          title: Text(
             "To Do",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 30,
-            ),
           ),
         ),
         body: tabs[selectedIndex]);

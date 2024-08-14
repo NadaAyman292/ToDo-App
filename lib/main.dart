@@ -1,16 +1,20 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/firebase_options.dart';
+import 'package:todo_app/provider/my_provider.dart';
 import 'package:todo_app/provider/theme_provider.dart';
+import 'package:todo_app/screens/auth/login_screen.dart';
+import 'package:todo_app/screens/auth/signup_screen.dart';
+import 'package:todo_app/screens/edit/edite_task_screen.dart';
 import 'package:todo_app/screens/home/home_screen.dart';
 import 'package:todo_app/utiles/theme/theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   print('ready in 3...');
@@ -25,6 +29,8 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await FirebaseFirestore.instance.enableNetwork();
+
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (context) => ThemeProvider()..loadTheme()),
@@ -35,7 +41,8 @@ void main() async {
             'assets/translations', // <-- change the path of the translation files
         fallbackLocale: Locale('en'),
         saveLocale: true,
-        child: const MyApp()),
+        child: ChangeNotifierProvider(
+            create: (context) => MyProvider(), child: const MyApp())),
   ));
 }
 
@@ -46,6 +53,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var provider = Provider.of<ThemeProvider>(context);
+    var pro = Provider.of<MyProvider>(context);
+
     return MaterialApp(
       themeMode: provider.mode,
       theme: MyThemeData.lightTheme,
@@ -55,8 +64,13 @@ class MyApp extends StatelessWidget {
       locale: context.locale,
       routes: {
         HomeScreen.routeName: (context) => HomeScreen(),
+        EditTaskScreen.routeName: (context) => EditTaskScreen(),
+        LoginScreen.routName: (context) => LoginScreen(),
+        SignUpScreen.routName: (context) => SignUpScreen()
       },
-      initialRoute: HomeScreen.routeName,
+      initialRoute: pro.firebaseUser != null
+          ? HomeScreen.routeName
+          : LoginScreen.routName,
       debugShowCheckedModeBanner: false,
     );
   }

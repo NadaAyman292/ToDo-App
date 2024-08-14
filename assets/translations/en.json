@@ -9,6 +9,29 @@
     "english":"English",
     "mode":"Mode",
     "light":"Light",
-    "dark":"Dark"
+    "dark":"Dark",
+    "edit_task":"Edit Task",
+    "save_changes":"Save Changes",
+    "login":"Login",
+    "email":"Email",
+    "enter_your_email":"Enter your Email",
+    "password":"Password",
+    "enter_your_password":"Enter your Password",
+    "don't_have_account?":"don't have an account? ",
+    "signup":"SignUp",
+    "username":"UserName",
+    "enter_your_username":"Enter your username",
+
+    "phone_number":"Phone Number",
+    "enter_your_phone_number":"Enter your phone number",
+    "age":"Age",
+    "enter_your_age":"Enter your age",
+    "have_an_account?":"have an account? "
+
+
+
+
+
+
     
 }

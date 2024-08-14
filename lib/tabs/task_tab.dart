@@ -6,8 +6,15 @@ import 'package:todo_app/provider/theme_provider.dart';
 import 'package:todo_app/utiles/theme/colors.dart';
 import 'package:todo_app/widgets/task_item.dart';
 
-class TasksTab extends StatelessWidget {
-  const TasksTab({super.key});
+class TasksTab extends StatefulWidget {
+  TasksTab({super.key});
+
+  @override
+  State<TasksTab> createState() => _TasksTabState();
+}
+
+class _TasksTabState extends State<TasksTab> {
+  DateTime dateTime = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
@@ -16,10 +23,13 @@ class TasksTab extends StatelessWidget {
     var provider = Provider.of<ThemeProvider>(context);
     return Column(children: [
       CalendarTimeline(
-        initialDate: DateTime.now(),
+        initialDate: dateTime,
         firstDate: DateTime.now().subtract(Duration(days: 365)),
         lastDate: DateTime.now().add(Duration(days: 365)),
-        onDateSelected: (date) => print(date),
+        onDateSelected: (date) {
+          dateTime = date;
+          setState(() {});
+        },
         leftMargin: 20,
         monthColor:
             provider.mode == ThemeMode.light ? Colors.black : Colors.white,
@@ -34,7 +44,7 @@ class TasksTab extends StatelessWidget {
       ),
       Expanded(
         child: StreamBuilder(
-          stream: FireBaseFunctions.getTasks(),
+          stream: FireBaseFunctions.getTasks(dateTime),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());

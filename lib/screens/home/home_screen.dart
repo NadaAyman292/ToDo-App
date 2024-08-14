@@ -1,6 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:todo_app/provider/theme_provider.dart';
+import 'package:todo_app/helper/firebase_functions.dart';
+import 'package:todo_app/provider/my_provider.dart';
+import 'package:todo_app/screens/auth/login_screen.dart';
 import 'package:todo_app/tabs/settings_tap.dart';
 import 'package:todo_app/tabs/task_tab.dart';
 import 'package:todo_app/utiles/theme/colors.dart';
@@ -19,6 +22,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var pro = Provider.of<MyProvider>(context);
+
     return Scaffold(
         extendBody: true,
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -69,9 +74,17 @@ class _HomeScreenState extends State<HomeScreen> {
               ]),
         ),
         appBar: AppBar(
+          actions: [
+            IconButton(
+                onPressed: () {
+                  FirebaseAuth.instance.signOut();
+                  Navigator.pushNamed(context, LoginScreen.routName);
+                },
+                icon: Icon(Icons.logout))
+          ],
           backgroundColor: MyColors.primaryLightColor,
           title: Text(
-            "To Do",
+            "Hello ${pro.userModel?.userName}",
           ),
         ),
         body: tabs[selectedIndex]);

@@ -9,7 +9,27 @@
     "english":"الانجليزية",
     "mode":"النمط",
     "light":"نهاري",
-    "dark":"ليلي"
+    "dark":"ليلي",
+    "edit_task":"تعديل المهمة",
+    "save_changes":"حفظ التغييرات",
+    "login":"تسجيل الدخول",
+    "email":"البريد الالكتروني",
+    "enter_your_email":"ادخل بريدك اللالكتروني",
+    "password":"كلمة المرور",
+    "enter_your_password":"ادخل كلمة المرور",
+    "don't_have_account?":" ليس لديك حساب ؟",
+    "signup":"التسجيل",
+    "username":"اسم المستخدم",
+    "enter_your_username":"ادخل اسم المستخدم",
+
+    "phone_number":"رقم التلفون",
+    "enter_your_phone_number":"ادخل رقم التلفون",
+    "age":"العمر",
+    "enter_your_age":"ادخل عمرك",
+    "have_an_account?":" لديك حساب؟ "
+
+
+
 
     
 }

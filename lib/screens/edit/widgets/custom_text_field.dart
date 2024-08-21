@@ -3,20 +3,23 @@ import 'package:provider/provider.dart';
 import 'package:todo_app/provider/theme_provider.dart';
 import 'package:todo_app/utiles/theme/colors.dart';
 
-class CustomTextField extends StatelessWidget {
-  final TextEditingController? controller;
+class EditTextFormField extends StatelessWidget {
   final String? labelText;
-  const CustomTextField({super.key, this.controller, this.labelText});
+  final String? initialValue;
+  final void Function(String)? onChanged;
+  const EditTextFormField(
+      {super.key, this.labelText, this.initialValue, this.onChanged});
 
   @override
   Widget build(BuildContext context) {
     var provider = Provider.of<ThemeProvider>(context);
 
-    return TextField(
+    return TextFormField(
+      initialValue: initialValue,
+      onChanged: onChanged,
       style: TextStyle(
           color:
               provider.mode == ThemeMode.light ? Colors.black : Colors.white),
-      controller: controller,
       decoration: InputDecoration(
         focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(18),

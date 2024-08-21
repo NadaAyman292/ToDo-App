@@ -55,7 +55,7 @@ class LoginScreen extends StatelessWidget {
               const SizedBox(
                 height: 18,
               ),
-              CustomTextFormField(
+              AuthTextFormField(
                 keyboardType: TextInputType.emailAddress,
                 controller: emailController,
                 hintText: "enter_your_email".tr(),
@@ -69,7 +69,7 @@ class LoginScreen extends StatelessWidget {
               const SizedBox(
                 height: 18,
               ),
-              CustomTextFormField(
+              AuthTextFormField(
                 obscureText: true,
                 keyboardType: TextInputType.visiblePassword,
                 controller: passwordController,

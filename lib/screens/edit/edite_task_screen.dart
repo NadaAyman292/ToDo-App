@@ -17,13 +17,11 @@ class EditTaskScreen extends StatefulWidget {
 }
 
 class _EditTaskScreenState extends State<EditTaskScreen> {
-  var titleController = TextEditingController();
-  var descriptionController = TextEditingController();
   DateTime selectedDate = DateTime.now();
   @override
   Widget build(BuildContext context) {
     var provider = Provider.of<ThemeProvider>(context);
-    var model = ModalRoute.of(context)?.settings.arguments as TaskModel;
+    var model = ModalRoute.of(context)!.settings.arguments as TaskModel;
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -49,15 +47,21 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
             const SizedBox(
               height: 18,
             ),
-            CustomTextField(
-              controller: titleController,
+            EditTextFormField(
+              initialValue: model.title,
+              onChanged: (value) {
+                model.title = value;
+              },
               labelText: "title".tr(),
             ),
             const SizedBox(
               height: 22,
             ),
-            CustomTextField(
-              controller: descriptionController,
+            EditTextFormField(
+              initialValue: model.description,
+              onChanged: (value) {
+                model.description = value;
+              },
               labelText: "description".tr(),
             ),
             const SizedBox(
@@ -67,12 +71,17 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
               text: "select_date".tr(),
             ),
             GestureDetector(
-              onTap: () {
-                chooseYourDate();
+              onTap: () async {
+                DateTime? newDate = await chooseYourDate();
+                if (newDate != null) {
+                  model.date = newDate.millisecondsSinceEpoch;
+                  setState(() {});
+                }
               },
               child: Center(
                 child: Text(
-                  selectedDate.toString().substring(0, 10),
+                  DateFormat.yMd().format(DateUtils.dateOnly(
+                      DateTime.fromMillisecondsSinceEpoch(model.date ?? 0))),
                   style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -90,14 +99,9 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                 child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                         backgroundColor: MyColors.primaryLightColor),
-                    onPressed: () {
-                      model.title = titleController.text;
-                      model.description = descriptionController.text;
-                      model.date = DateUtils.dateOnly(selectedDate)
-                          .millisecondsSinceEpoch;
-                      FireBaseFunctions.upDateTask(model).then((_) {
-                        Navigator.pop(context);
-                      });
+                    onPressed: () async {
+                      await FireBaseFunctions.upDateTask(model);
+                      Navigator.pop(context);
                     },
                     child: Text(
                       "save_changes".tr(),
@@ -125,5 +129,6 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
       selectedDate = chosenDate;
       setState(() {});
     }
+    return chosenDate;
   }
 }

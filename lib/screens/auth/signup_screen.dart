@@ -18,11 +18,10 @@ class SignUpScreen extends StatelessWidget {
   TextEditingController userNameController = TextEditingController();
   TextEditingController ageController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
-
+  var formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     var provider = Provider.of<ThemeProvider>(context);
-
     return Scaffold(
       bottomNavigationBar: HaveAccountWidget(
         onTap: () {
@@ -41,89 +40,136 @@ class SignUpScreen extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
         child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CustomTextWidget(text: "email".tr()),
-              CustomTextFormField(
-                keyboardType: TextInputType.emailAddress,
-                controller: emailController,
-                hintText: "enter_your_email".tr(),
-              ),
-              const SizedBox(
-                height: 18,
-              ),
-              CustomTextWidget(text: "username".tr()),
-              CustomTextFormField(
-                keyboardType: TextInputType.name,
-                controller: userNameController,
-                hintText: "enter_your_username".tr(),
-              ),
-              const SizedBox(
-                height: 18,
-              ),
-              CustomTextWidget(text: "phone_number".tr()),
-              CustomTextFormField(
-                keyboardType: TextInputType.phone,
-                controller: phoneController,
-                hintText: "enter_your_phone_number".tr(),
-              ),
-              const SizedBox(
-                height: 18,
-              ),
-              CustomTextWidget(text: "age".tr()),
-              CustomTextFormField(
-                keyboardType: TextInputType.number,
-                controller: ageController,
-                hintText: "enter_your_age".tr(),
-              ),
-              const SizedBox(
-                height: 18,
-              ),
-              CustomTextWidget(text: "password".tr()),
-              CustomTextFormField(
-                obscureText: true,
-                keyboardType: TextInputType.visiblePassword,
-                controller: passwordController,
-                hintText: "enter_your_password".tr(),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              CustomButton(
-                text: "signup".tr(),
-                onPressed: () {
-                  FireBaseFunctions.createAccountAuth(
-                      age: int.parse(ageController.text),
-                      phone: phoneController.text,
-                      userName: userNameController.text,
-                      emailController.text,
-                      passwordController.text, onError: (error) {
-                    showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                              title: Text("Error"),
-                              content: Text(error),
-                              actions: [
-                                ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                    child: Text("cancel")),
-                                ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                    child: Text("Ok")),
-                              ],
-                            ));
-                  }, onSuccess: () {
-                    Navigator.pushNamed(context, LoginScreen.routName);
-                  });
-                },
-              )
-            ],
+          child: Form(
+            key: formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CustomTextWidget(text: "email".tr()),
+                AuthTextFormField(
+                  validator: (value) {
+                    if (value == null) {
+                      return "please enter your email";
+                    }
+                    final bool emailValid = RegExp(
+                            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                        .hasMatch(value);
+                    if (!emailValid) {
+                      return "please enter a valid email format";
+                    }
+                    return null;
+                  },
+                  keyboardType: TextInputType.emailAddress,
+                  controller: emailController,
+                  hintText: "enter_your_email".tr(),
+                ),
+                const SizedBox(
+                  height: 18,
+                ),
+                CustomTextWidget(text: "username".tr()),
+                AuthTextFormField(
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Please Enter your username";
+                    }
+                    return null;
+                  },
+                  keyboardType: TextInputType.name,
+                  controller: userNameController,
+                  hintText: "enter_your_username".tr(),
+                ),
+                const SizedBox(
+                  height: 18,
+                ),
+                CustomTextWidget(text: "phone_number".tr()),
+                AuthTextFormField(
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Please Enter your phone";
+                    }
+                    return null;
+                  },
+                  keyboardType: TextInputType.phone,
+                  controller: phoneController,
+                  hintText: "enter_your_phone_number".tr(),
+                ),
+                const SizedBox(
+                  height: 18,
+                ),
+                CustomTextWidget(text: "age".tr()),
+                AuthTextFormField(
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Please Enter your age";
+                    }
+                    return null;
+                  },
+                  keyboardType: TextInputType.number,
+                  controller: ageController,
+                  hintText: "enter_your_age".tr(),
+                ),
+                const SizedBox(
+                  height: 18,
+                ),
+                CustomTextWidget(text: "password".tr()),
+                AuthTextFormField(
+                  validator: (value) {
+                    if (value == null) {
+                      return "please enter your password";
+                    }
+                    bool regex = RegExp(
+                            r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$')
+                        .hasMatch(value!);
+                    if (!regex) {
+                      return "please enter a valid password format";
+                    }
+                    return null;
+                  },
+                  obscureText: true,
+                  keyboardType: TextInputType.visiblePassword,
+                  controller: passwordController,
+                  hintText: "enter_your_password".tr(),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                CustomButton(
+                  text: "signup".tr(),
+                  onPressed: () {
+                    if (formKey.currentState!.validate()) {
+                      FireBaseFunctions.createAccountAuth(
+                          age: int.parse(ageController.text),
+                          phone: phoneController.text,
+                          userName: userNameController.text,
+                          emailController.text,
+                          passwordController.text, onError: (error) {
+                        showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                                  title: Text("Error"),
+                                  content: Text(error),
+                                  actions: [
+                                    ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        child: Text("cancel")),
+                                    ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        child: Text("Ok")),
+                                  ],
+                                ));
+                      }, onSuccess: () {
+                        Navigator.pushNamed(context, LoginScreen.routName);
+                      });
+                    }
+                  },
+                )
+              ],
+            ),
           ),
         ),
       ),
